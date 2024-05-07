@@ -1,0 +1,59 @@
+A=[1 2;1 1;0 1;1 0;0 1];
+B=[2000;1500;600;0;0];
+C=[3;4];
+index=0;
+m=input('Enter the number of equations\n');
+for i=1:m-1
+    for j=i+1:m
+        asub=A([i,j],:); %reading 2 rows of A matrix
+        bsub=B([i,j]);   %reading corresponding solutions of above
+        if det(asub)~=0
+            index=index+1;
+            pt= inv(asub)*bsub;  %solving equations
+            allpts(index,:)=pt'; %we got all points 
+        end
+    end
+end
+
+points=unique(allpts,'rows'); 
+feasible_pts=0; %initialising feasible pts for giving vno. of points
+num=length(points); 
+feasible=[];
+for i=1:num
+    if points(i,:)>=0
+        asubn=A([1:m-2],:); %reading only first 3 constraints
+        bsubn=B([1:m-2],:); %reads unke corresponding solutions
+        if asubn*points(i,:)' - bsubn<=0 
+           feasible_pts=feasible_pts +1;
+           feasible(feasible_pts,:)=points(i,:);
+        end
+    end
+end
+feasible_pts; %no. of feasible points
+points; %matrix of all points
+feasible; %matrix of feasible points
+ 
+z=feasible*C ;
+z;
+ 
+[maxvalue,index1]=max(z);
+maxvalue;
+index1;
+ 
+x1=[-1,max(feasible(:,1))+1];
+   x2=(2000-x1)/2;
+    plot(x1,x2)
+    hold on
+    x2=1500-x1;
+    plot(x1,x2)
+    hold on
+    x2=600 + 0*x1;
+    plot(x1,x2)
+    hold on
+    grid on
+    number = length(feasible);
+    for i = 1:number
+        plot(feasible(i,1),feasible(i,2),'O')
+        hold on
+    end
+    plot(feasible(index1,1),feasible(index1,2),'*')
