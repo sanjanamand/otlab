@@ -1,0 +1,59 @@
+A =[1 1;2 1; 1 -1];
+b =[1;4;-2];
+C =[2 3];
+sign =[-1;1;0];
+m = 3; %no. equations
+n = 2; %np. of variables
+
+for i=1:m       %standardization loop
+    if b(i)<0
+        b(i)=-b(i);
+        A(i,:)=-A(i,:);
+        sign(i)=-sign(i);
+    end
+end
+
+s = eye(m); %identity matrix
+for i = 1:m
+    if sign(i)==0 
+        s(i,i) = 0; 
+    end
+    if sign(i)<0
+        s(i,i) = -s(i,i);
+    end
+end
+Anew = [A s];
+index = 0;
+nv1 = length(Anew); 
+for i = 1:nv1 %removing extra column
+    if Anew(:,i)==0  %jo column ki saari rows are 0
+       rc = i - index;
+       Anew(:,rc) = []; %delete vo wala column
+       index = index+1; 
+    end
+end
+nv = length(Anew);
+Cnew = [C zeros(1,nv-n)];
+nc = nchoosek(nv,m); %no. of cases
+comb = nchoosek(1:nv,m); %types of cases 
+fs = [];
+for i = 1:nc
+    index = comb(i,:);%index is ith row of comb matrix
+    B = [];
+    for j = 1:m
+        B = [B Anew(:,index(j))]; %coeff matrix of selected case ke variables
+    end
+    X = zeros(nv,1); %0 matrix of 4 rows
+    Y = inv(B)*b; %row matrix of 3 selected variables
+    X(index) = Y; 
+    if (X >=0) %checking feasible condition 
+    fs = [fs X];%when satisfies load values to fs matrix and break otherwise repeat loop
+    break
+    end
+end
+cb = Cnew(index); %
+%Ymat = inv(B)*Anew;
+%Zrow = cb*Ymat-Cnew;
+sol = cb*Y;
+sol;
+%table = [Ymat Y;Zrow sol];
